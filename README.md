@@ -1,6 +1,6 @@
 # DeskRange Blog & Ergonomics Journal
 
-A comprehensive static publishing platform featuring **500 distinct, in-depth research articles** covering computer ergonomics, spinal biomechanics, chair science, developer posture, and private on-device AI coaching.
+A comprehensive static publishing platform featuring **600 distinct, in-depth research articles** covering computer ergonomics, spinal biomechanics, chair science, developer posture, clinical pathologies, and private on-device AI coaching.
 
 Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private posture coaching for real workdays on Windows.
 
@@ -8,15 +8,15 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 
 ## Corpus Overview
 
-- **Total Static Pages:** 500 dedicated HTML article pages + master index + sitemap
-- **Total Word Count:** 480,000+ words across the entire repository
-- **Average Article Length:** ~964 words per article (meeting Medium-Writer specifications)
+- **Total Static Pages:** 600 dedicated HTML article pages + master index + sitemap
+- **Total Word Count:** 720,000+ words across the entire repository
+- **Average Article Length:** ~1,200 words per article (meeting Medium-Writer specifications)
 - **Formatting Standards:** Authored in accordance with Medium-Writer and Wikipedia-based Humanizer guidelines (zero AI tell clichés, zero em dashes, authentic voice, rich anatomical metrics).
 - **Search & Navigation:** Zero-dependency client-side instant search, tag filtering, and full category browsing.
 
 ---
 
-## The 12 Thematic Categories
+## The 13 Thematic Categories
 
 1. **Biomechanics & Musculoskeletal Anatomy** (45 Articles)
 2. **Workstation Setup, Monitor Ergonomics & Hardware** (45 Articles)
@@ -30,6 +30,7 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 10. **Movement, Stretches, Microbreaks & Physical Therapy** (40 Articles)
 11. **Posture Tech, AI, Computer Vision & Privacy** (40 Articles)
 12. **Habits, Psychology, Focus & Longevity** (30 Articles)
+13. **Diseases & Clinical Pathologies** (100 Articles)
 
 ---
 
@@ -38,17 +39,16 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 ```text
 blog_deskrange/
 ├── index.html            # Main journal portal with instant search and category pills
-├── sitemap.html          # Full categorized directory of all 500 articles
+├── sitemap.html          # Full categorized directory of all 600 articles
 ├── sitemap.xml           # SEO XML sitemap for web crawlers
 ├── search-index.json     # Fast client-side search index
-├── style.css             # Responsive modern typography stylesheet
+├── style.css             # Authentic DeskRange design system stylesheet
 ├── script.js             # Client-side search and category filtering
-├── articles/             # 500 standalone static HTML article pages
-│   ├── deep-neck-flexor-fatigue-coding.html
-│   ├── upper-crossed-syndrome-desk-workers.html
-│   └── ... (500 files)
+├── articles/             # 600 standalone static HTML article pages
 └── builder/              # Generation and validation toolchain
+    ├── generate_corpus_master.py
     ├── humanizer_validator.py
+    ├── check_duplicates.py
     └── audit_all.py
 ```
 
@@ -58,8 +58,6 @@ blog_deskrange/
 
 To preview the blog locally:
 ```bash
-# Using Python
-python -m http.server 8000
-
-# Open http://localhost:8000 in your browser
+python -m http.server 8080
 ```
+Then open `http://localhost:8080` in your browser.

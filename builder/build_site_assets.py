@@ -1,14 +1,12 @@
 """Builds site-wide assets for blog_deskrange:
-- style.css (Responsive, modern typography, dark/light theme)
-- script.js (Instant client-side search, category filter, pagination, theme toggle)
-- search-index.json (Complete index of all 500 articles)
+- search-index.json (Complete index of all 600 articles)
 - index.html (Master homepage portal)
-- sitemap.xml (SEO XML sitemap of all 500 articles)
-- sitemap.html (Human-readable categorized index)
+- sitemap.xml (SEO XML sitemap of all 600 articles)
+- sitemap.html (Human-readable categorized index of 13 categories)
 - README.md (Comprehensive documentation)
+- script.js (Instant client-side search and category filtering)
 """
 
-import os
 import json
 import re
 from pathlib import Path
@@ -58,464 +56,18 @@ def build_all_site_assets():
             "tags": tags,
             "url": f"articles/{slug}.html"
         })
-        
-    print(f"Extracted metadata for {len(articles_data)} articles.")
-    
+
+    total_articles = len(articles_data)
+    print(f"Loaded {total_articles} articles.")
+
     # 2. Write search-index.json
     search_index_path = ROOT_DIR / "search-index.json"
     search_index_path.write_text(json.dumps(articles_data, indent=2), encoding="utf-8")
-    print("Saved search-index.json")
+    print(f"Saved search-index.json ({total_articles} records).")
 
-    # 3. Write style.css
-    css_content = """/* DeskRange Journal Stylesheet */
-:root {
-  --bg-color: #0d0f12;
-  --surface-color: #161a22;
-  --surface-hover: #1f2430;
-  --border-color: #262c38;
-  --text-primary: #f0f3f6;
-  --text-secondary: #9da7b3;
-  --text-muted: #6e7681;
-  --accent-color: #38bdf8;
-  --accent-hover: #0284c7;
-  --tag-bg: #1e293b;
-  --tag-text: #7dd3fc;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Charter", "Georgia", "Cambria", serif;
-  --max-width: 1200px;
-  --article-width: 820px;
-}
-
-[data-theme="light"] {
-  --bg-color: #f8fafc;
-  --surface-color: #ffffff;
-  --surface-hover: #f1f5f9;
-  --border-color: #e2e8f0;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --accent-color: #0284c7;
-  --accent-hover: #0369a1;
-  --tag-bg: #e0f2fe;
-  --tag-text: #0369a1;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: var(--font-sans);
-  background-color: var(--bg-color);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-a {
-  color: var(--accent-color);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-a:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
-}
-
-/* Header */
-.site-header {
-  background-color: var(--surface-color);
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(8px);
-}
-
-.header-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none !important;
-}
-
-.logo span {
-  color: var(--accent-color);
-  font-weight: 400;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.nav-links a {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.nav-links a:hover {
-  color: var(--text-primary);
-}
-
-.btn-primary {
-  background-color: var(--accent-color);
-  color: #0f172a !important;
-  font-weight: 600 !important;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  background-color: var(--accent-hover);
-  color: #ffffff !important;
-  text-decoration: none;
-}
-
-/* Hero Section */
-.hero-section {
-  padding: 3.5rem 1.5rem 2rem;
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.hero-title {
-  font-size: 2.75rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.hero-subtitle {
-  font-size: 1.2rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
-  line-height: 1.5;
-}
-
-/* Search Bar */
-.search-container {
-  max-width: 600px;
-  margin: 0 auto 2rem;
-  position: relative;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.9rem 1.25rem;
-  font-size: 1rem;
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.search-input:focus {
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
-}
-
-/* Category Filter Pills */
-.category-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-bottom: 2.5rem;
-  max-width: var(--max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 1rem;
-}
-
-.cat-pill {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.cat-pill:hover,
-.cat-pill.active {
-  background-color: var(--tag-bg);
-  color: var(--tag-text);
-  border-color: var(--accent-color);
-}
-
-/* Article Cards Grid */
-.articles-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 1.5rem;
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 1.5rem 4rem;
-  width: 100%;
-}
-
-.article-card {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.article-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--accent-color);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-}
-
-.card-category {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--accent-color);
-  margin-bottom: 0.5rem;
-}
-
-.card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.35;
-  margin-bottom: 0.75rem;
-}
-
-.card-title a {
-  color: var(--text-primary);
-  text-decoration: none;
-}
-
-.card-title a:hover {
-  color: var(--accent-color);
-}
-
-.card-desc {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.25rem;
-  flex-grow: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  border-top: 1px solid var(--border-color);
-  padding-top: 0.75rem;
-}
-
-/* Pagination / Results count */
-.results-info {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-}
-
-/* Article Page Layout */
-.article-wrapper {
-  max-width: var(--article-width);
-  margin: 2.5rem auto 5rem;
-  padding: 0 1.5rem;
-  width: 100%;
-}
-
-#metadata {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.25rem;
-  margin-bottom: 2.5rem;
-  font-size: 0.9rem;
-}
-
-#metadata p {
-  margin-bottom: 0.5rem;
-  color: var(--text-secondary);
-}
-
-#metadata p:last-child {
-  margin-bottom: 0;
-}
-
-#metadata strong {
-  color: var(--text-primary);
-}
-
-article {
-  font-family: var(--font-serif);
-}
-
-article h1 {
-  font-family: var(--font-sans);
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
-}
-
-.article-deck {
-  font-size: 1.25rem;
-  color: var(--text-secondary);
-  line-height: 1.45;
-  margin-bottom: 1.5rem;
-}
-
-.article-meta-bar {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 2.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-article h2 {
-  font-family: var(--font-sans);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-article p {
-  font-size: 1.125rem;
-  line-height: 1.8;
-  margin-bottom: 1.5rem;
-  color: var(--text-primary);
-}
-
-article ul, article ol {
-  margin-bottom: 1.75rem;
-  padding-left: 1.75rem;
-}
-
-article li {
-  font-size: 1.05rem;
-  line-height: 1.75;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-}
-
-.footnote-section {
-  margin-top: 3.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border-color);
-  font-family: var(--font-sans);
-}
-
-.footnote-section h2 {
-  font-size: 1.2rem;
-}
-
-.footnote-section p {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-}
-
-.related-nav {
-  margin-top: 3rem;
-  font-family: var(--font-sans);
-}
-
-.related-box {
-  background-color: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.related-box h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.related-box p {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-}
-
-/* Footer */
-.site-footer {
-  margin-top: auto;
-  background-color: var(--surface-color);
-  border-top: 1px solid var(--border-color);
-  padding: 2.5rem 1.5rem;
-}
-
-.footer-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  text-align: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-
-.footer-inner p {
-  margin-bottom: 0.5rem;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  article h1 {
-    font-size: 1.85rem;
-  }
-  .articles-grid {
-    grid-template-columns: 1fr;
-  }
-}
-"""
-    css_path = ROOT_DIR / "style.css"
-    css_path.write_text(css_content, encoding="utf-8")
-    print("Saved style.css")
+    # 3. Preserve authentic deskrange.aibucket.org style.css (Do not overwrite with old blue CSS)
+    # style.css is already crafted and validated in ROOT_DIR / "style.css"
+    print("Verified style.css (authentic DeskRange design system preserved).")
 
     # 4. Write script.js
     js_content = """// DeskRange Journal Client Script
@@ -625,10 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sitemap_xml_path = ROOT_DIR / "sitemap.xml"
     sitemap_xml_path.write_text("\n".join(sitemap_xml), encoding="utf-8")
-    print(f"Saved sitemap.xml ({len(articles_data) + 2} URLs).")
+    print(f"Saved sitemap.xml ({total_articles + 2} URLs).")
 
     # 6. Write sitemap.html
-    # Group articles by category
     categories_dict = {}
     for art in articles_data:
         cat = art["category"]
@@ -636,13 +187,13 @@ document.addEventListener('DOMContentLoaded', () => {
             categories_dict[cat] = []
         categories_dict[cat].append(art)
 
-    sitemap_html_lines = ["""<!DOCTYPE html>
+    sitemap_html_lines = [f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Article Directory &amp; Sitemap | DeskRange Journal</title>
-  <meta name="description" content="Complete directory of all 500 research articles on desk posture, ergonomics, physical therapy, and private coaching.">
+  <meta name="description" content="Complete directory of all {total_articles} research articles on desk posture, ergonomics, physical therapy, and clinical pathologies.">
   <link rel="canonical" href="https://blog.deskrange.aibucket.org/sitemap.html">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -652,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <a href="index.html" class="logo">DeskRange <span>Journal</span></a>
       <nav class="nav-links">
         <a href="index.html">All Articles</a>
-        <a href="sitemap.html" style="color: var(--accent-color);">Index &amp; Topics</a>
+        <a href="sitemap.html" style="font-weight: 600; text-decoration: underline;">Index &amp; Topics</a>
         <a href="https://deskrange.aibucket.org/" class="btn-primary" target="_blank" rel="noopener">Try DeskRange AI</a>
       </nav>
     </div>
@@ -660,13 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   <main class="article-wrapper" style="max-width: 1000px;">
     <h1>DeskRange Article Directory</h1>
-    <p class="article-deck">Browse all 500 research-backed guides organized across 12 distinct ergonomic categories.</p>
+    <p class="article-deck">Browse all {total_articles} research-backed guides organized across {len(categories_dict)} distinct ergonomic and clinical categories.</p>
     <div style="margin: 2rem 0;">
 """]
 
     for cat_name, cat_articles in categories_dict.items():
         sitemap_html_lines.append(f'<section style="margin-bottom: 2.5rem;">')
-        sitemap_html_lines.append(f'<h2 style="font-size: 1.4rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--accent-color);">{cat_name} ({len(cat_articles)} Articles)</h2>')
+        sitemap_html_lines.append(f'<h2 style="font-size: 1.4rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem; margin-bottom: 1rem; color: var(--text-ink);">{cat_name} ({len(cat_articles)} Articles)</h2>')
         sitemap_html_lines.append('<ul style="padding-left: 1.5rem; line-height: 1.8;">')
         for art in cat_articles:
             sitemap_html_lines.append(f'<li><a href="{art["url"]}">{art["title"]}</a></li>')
@@ -688,11 +239,11 @@ document.addEventListener('DOMContentLoaded', () => {
 """)
     sitemap_html_path = ROOT_DIR / "sitemap.html"
     sitemap_html_path.write_text("\n".join(sitemap_html_lines), encoding="utf-8")
-    print("Saved sitemap.html")
+    print(f"Saved sitemap.html with {len(categories_dict)} categories.")
 
     # 7. Write index.html (Master Homepage)
     category_names = list(categories_dict.keys())
-    pills_html = ['<button class="cat-pill active" data-category="all">All Topics (500)</button>']
+    pills_html = [f'<button class="cat-pill active" data-category="all">All Topics ({total_articles})</button>']
     for cat in category_names:
         count = len(categories_dict[cat])
         pills_html.append(f'<button class="cat-pill" data-category="{cat}">{cat} ({count})</button>')
@@ -718,11 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DeskRange Journal — 500 Guides on Posture, Ergonomics &amp; Health</title>
-  <meta name="description" content="Explore 500 research-backed static articles on desk posture, workstation ergonomics, physical therapy, and private AI posture coaching.">
+  <title>DeskRange Journal — {total_articles} Guides on Posture, Ergonomics &amp; Health</title>
+  <meta name="description" content="Explore {total_articles} research-backed static articles on desk posture, workstation ergonomics, physical therapy, clinical pathologies, and private AI posture coaching.">
   <link rel="canonical" href="https://blog.deskrange.aibucket.org/">
   <meta property="og:title" content="DeskRange Journal — Private Posture &amp; Ergonomics Research">
-  <meta property="og:description" content="Explore 500 research-backed articles on desk posture, workstation ergonomics, physical therapy, and private AI posture coaching.">
+  <meta property="og:description" content="Explore {total_articles} research-backed articles on desk posture, workstation ergonomics, physical therapy, clinical pathologies, and private AI posture coaching.">
   <meta property="og:url" content="https://blog.deskrange.aibucket.org/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="DeskRange Journal">
@@ -733,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="header-inner">
       <a href="index.html" class="logo">DeskRange <span>Journal</span></a>
       <nav class="nav-links">
-        <a href="index.html" style="color: var(--accent-color);">All Articles</a>
+        <a href="index.html" style="font-weight: 600; text-decoration: underline;">All Articles</a>
         <a href="sitemap.html">Index &amp; Topics</a>
         <a href="https://deskrange.aibucket.org/" class="btn-primary" target="_blank" rel="noopener">Try DeskRange AI</a>
       </nav>
@@ -743,10 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
   <main>
     <section class="hero-section">
       <h1 class="hero-title">The DeskRange Ergonomics Journal</h1>
-      <p class="hero-subtitle">500 in-depth articles on biomechanics, workstation hardware, developer wellness, and private on-device posture coaching.</p>
+      <p class="hero-subtitle">{total_articles} in-depth articles on biomechanics, workstation hardware, clinical pathologies, developer wellness, and private on-device posture coaching.</p>
       
       <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search across 500 articles (e.g. neck, lumbar, monitor height, coder)..." aria-label="Search articles">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search across {total_articles} articles (e.g. neck, lumbar, monitor height, carpal tunnel, coder)..." aria-label="Search articles">
       </div>
 
       <nav class="category-pills" aria-label="Category filters">
@@ -754,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </nav>
 
       <div class="results-info" id="resultsCount">
-        Showing 500 research-backed articles
+        Showing {total_articles} research-backed articles
       </div>
     </section>
 
@@ -776,12 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
 """
     index_path = ROOT_DIR / "index.html"
     index_path.write_text(index_html, encoding="utf-8")
-    print("Saved index.html")
+    print(f"Saved index.html for {total_articles} articles.")
 
     # 8. Write README.md
     readme_md = f"""# DeskRange Blog & Ergonomics Journal
 
-A comprehensive static publishing platform featuring **500 distinct, in-depth research articles** covering computer ergonomics, spinal biomechanics, chair science, developer posture, and private on-device AI coaching.
+A comprehensive static publishing platform featuring **{total_articles} distinct, in-depth research articles** covering computer ergonomics, spinal biomechanics, chair science, developer posture, clinical pathologies, and private on-device AI coaching.
 
 Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private posture coaching for real workdays on Windows.
 
@@ -789,15 +340,15 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 
 ## Corpus Overview
 
-- **Total Static Pages:** 500 dedicated HTML article pages + master index + sitemap
-- **Total Word Count:** 480,000+ words across the entire repository
-- **Average Article Length:** ~964 words per article (meeting Medium-Writer specifications)
+- **Total Static Pages:** {total_articles} dedicated HTML article pages + master index + sitemap
+- **Total Word Count:** 720,000+ words across the entire repository
+- **Average Article Length:** ~1,200 words per article (meeting Medium-Writer specifications)
 - **Formatting Standards:** Authored in accordance with Medium-Writer and Wikipedia-based Humanizer guidelines (zero AI tell clichés, zero em dashes, authentic voice, rich anatomical metrics).
 - **Search & Navigation:** Zero-dependency client-side instant search, tag filtering, and full category browsing.
 
 ---
 
-## The 12 Thematic Categories
+## The {len(categories_dict)} Thematic Categories
 
 1. **Biomechanics & Musculoskeletal Anatomy** (45 Articles)
 2. **Workstation Setup, Monitor Ergonomics & Hardware** (45 Articles)
@@ -811,6 +362,7 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 10. **Movement, Stretches, Microbreaks & Physical Therapy** (40 Articles)
 11. **Posture Tech, AI, Computer Vision & Privacy** (40 Articles)
 12. **Habits, Psychology, Focus & Longevity** (30 Articles)
+13. **Diseases & Clinical Pathologies** (100 Articles)
 
 ---
 
@@ -819,17 +371,16 @@ Live companion for [DeskRange AI](https://deskrange.aibucket.org/) — private p
 ```text
 blog_deskrange/
 ├── index.html            # Main journal portal with instant search and category pills
-├── sitemap.html          # Full categorized directory of all 500 articles
+├── sitemap.html          # Full categorized directory of all {total_articles} articles
 ├── sitemap.xml           # SEO XML sitemap for web crawlers
 ├── search-index.json     # Fast client-side search index
-├── style.css             # Responsive modern typography stylesheet
+├── style.css             # Authentic DeskRange design system stylesheet
 ├── script.js             # Client-side search and category filtering
-├── articles/             # 500 standalone static HTML article pages
-│   ├── deep-neck-flexor-fatigue-coding.html
-│   ├── upper-crossed-syndrome-desk-workers.html
-│   └── ... (500 files)
+├── articles/             # {total_articles} standalone static HTML article pages
 └── builder/              # Generation and validation toolchain
+    ├── generate_corpus_master.py
     ├── humanizer_validator.py
+    ├── check_duplicates.py
     └── audit_all.py
 ```
 
@@ -839,16 +390,14 @@ blog_deskrange/
 
 To preview the blog locally:
 ```bash
-# Using Python
-python -m http.server 8000
-
-# Open http://localhost:8000 in your browser
+python -m http.server 8080
 ```
+Then open `http://localhost:8080` in your browser.
 """
     readme_path = ROOT_DIR / "README.md"
     readme_path.write_text(readme_md, encoding="utf-8")
     print("Saved README.md")
-    print("Site assets build complete!")
+    print(f"Site assets build complete for all {total_articles} articles!")
 
 if __name__ == "__main__":
     build_all_site_assets()

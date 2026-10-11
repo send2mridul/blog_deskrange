@@ -147,7 +147,7 @@ def render_and_save_article(data: Dict[str, Any]) -> str:
     <nav class="related-nav">
       <div class="related-box">
         <h3>Explore More Ergonomics Guides</h3>
-        <p>Browse through 500 research-backed articles on desk health, monitor geometry, chair mechanics, and private posture coaching in the <a href="../sitemap.html">DeskRange Article Index</a> or return to the <a href="../index.html">Journal Homepage</a>.</p>
+        <p>Browse through 600 research-backed articles on desk health, monitor geometry, chair mechanics, and private posture coaching in the <a href="../sitemap.html">DeskRange Article Index</a> or return to the <a href="../index.html">Journal Homepage</a>.</p>
       </div>
     </nav>
   </main>
